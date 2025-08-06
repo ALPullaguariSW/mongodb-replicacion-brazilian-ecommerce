@@ -1,0 +1,34 @@
+# Dependencias principales para el proyecto MongoDB Replicación
+# Brazilian E-commerce Dataset Analysis
+
+# Análisis de datos
+pandas>=1.5.0
+numpy>=1.21.0
+
+# Visualización
+matplotlib>=3.5.0
+seaborn>=0.11.0
+
+# Base de datos
+pymongo>=4.0.0
+
+# Descarga de datasets
+kagglehub>=0.3.0
+
+# Jupyter y notebooks
+jupyter>=1.0.0
+ipykernel>=6.0.0
+
+# Utilidades
+python-dateutil>=2.8.0
+pytz>=2022.1
+
+# Opcional: Para análisis más avanzado
+scikit-learn>=1.0.0
+scipy>=1.7.0
+
+# Opcional: Para visualizaciones interactivas
+plotly>=5.0.0
+
+# Opcional: Para procesamiento de datos más rápido
+pyarrow>=7.0.0 
