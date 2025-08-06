@@ -28,6 +28,18 @@ Este proyecto implementa un sistema completo de **replicación Primario-Secundar
                     └─────────────────┘
 ```
 
+## 🚀 Características del Proyecto
+
+- **Replicación MongoDB**: Configuración automática de replica set con 1 primario y 2 secundarios
+- **Dataset Real**: Dataset de e-commerce brasileño con 9 archivos CSV interrelacionados
+- **Análisis Completo**: EDA detallado y proceso ETL robusto
+- **15 Consultas CRUD**: Operaciones complejas de Create, Read, Update, Delete
+- **Docker Compose**: Configuración automatizada del cluster
+- **Jupyter Notebooks**: Análisis interactivo y documentado
+- **Scripts de Automatización**: Setup y inicio automático del proyecto
+- **Barras de Progreso**: Interfaz visual con tqdm y colores para mejor experiencia de usuario
+- **Utilidades de Progreso**: Módulo dedicado para mostrar progreso en notebooks
+
 ## 🚀 Configuración Inicial
 
 ### 1. Prerrequisitos
@@ -90,9 +102,10 @@ MongoDB_Replicacion_Proyecto/
 │   ├── EDA_ETL_MongoDB.ipynb       # Análisis exploratorio y ETL
 │   └── Consultas_CRUD.ipynb        # 15 consultas CRUD complejas
 ├── 📁 scripts/
-│   ├── create_eda_notebook.py      # Generador notebook EDA
-│   ├── complete_crud_notebook.py   # Generador notebook CRUD
-│   └── start_project.py            # Script de inicio del proyecto
+│   ├── start_project.py            # Script de inicio del proyecto (con barras de progreso)
+│   ├── setup_project.py            # Script de configuración inicial
+│   ├── progress_utils.py           # Utilidades de barras de progreso
+│   └── common_utils.py             # Utilidades comunes para scripts
 ├── 📄 README.md                    # Este archivo
 ├── 📄 requirements.txt             # Dependencias Python
 └── 📄 .gitignore                   # Archivos a ignorar
@@ -100,15 +113,29 @@ MongoDB_Replicacion_Proyecto/
 
 ## 🐳 Iniciar el Cluster MongoDB
 
-### Opción 1: Usar el Script Automático
+### Opción 1: Configuración Inicial (Primera vez)
+
+```bash
+# Configurar el proyecto por primera vez
+python scripts/setup_project.py
+```
+
+### Opción 2: Usar el Script Automático (Recomendado)
 
 ```bash
 # Activar entorno conda
 conda activate mongo
 
-# Ejecutar script de inicio
+# Ejecutar script de inicio (con barras de progreso y colores)
 python scripts/start_project.py
 ```
+
+El script automático incluye:
+- ✅ **Barras de progreso** visuales para cada paso
+- ✅ **Verificación automática** de requisitos (Docker, Python packages)
+- ✅ **Colores** para mejor experiencia de usuario
+- ✅ **Animaciones** de progreso
+- ✅ **Guía interactiva** para el usuario
 
 ### Opción 2: Inicio Manual
 
@@ -184,6 +211,43 @@ Este notebook incluye **15 consultas complejas**:
 7. Agregaciones complejas
 8. Optimizaciones con índices
 
+## 🎨 Utilidades de Progreso
+
+### Usar Barras de Progreso en Notebooks
+
+Para mejorar la experiencia visual en los notebooks, puedes importar las utilidades de progreso:
+
+```python
+# En tu notebook
+from scripts.progress_utils import *
+
+# Mostrar pasos del ETL
+progress_etl_steps()
+
+# Mostrar progreso de limpieza de datos
+progress_data_cleaning(df)
+
+# Mostrar progreso de operaciones MongoDB
+progress_mongodb_operations(["Conectar", "Insertar", "Verificar"])
+
+# Verificar replicación con animación
+show_replication_status()
+
+# Mostrar información del DataFrame con progreso
+show_dataframe_info_with_progress(df, "Mi Dataset")
+```
+
+### Funciones Disponibles
+
+- `progress_etl_steps()`: Muestra los pasos del proceso ETL
+- `show_dataframe_info_with_progress()`: Análisis de DataFrame con barra de progreso
+- `progress_data_cleaning()`: Progreso de limpieza de datos
+- `progress_mongodb_operations()`: Operaciones MongoDB con progreso
+- `show_replication_status()`: Verificación de replicación con animación
+- `show_dataset_download_progress()`: Progreso de descarga de dataset
+- `show_csv_loading_progress()`: Carga de archivos CSV con progreso
+- `show_eda_progress()`: Progreso del análisis exploratorio
+
 ## 🔧 Comandos Útiles
 
 ### Docker
@@ -218,6 +282,9 @@ docker exec -it mongo-secondary2 mongosh --username admin --password password123
 ### Python/Anaconda
 
 ```bash
+# Configuración inicial (primera vez)
+python scripts/setup_project.py
+
 # Activar entorno
 conda activate mongo
 
