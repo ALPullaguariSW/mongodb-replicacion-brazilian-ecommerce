@@ -13,10 +13,10 @@ seaborn>=0.11.0
 pymongo>=4.0.0
 
 # Descarga de datasets
-kagglehub>=0.3.0
+kagglehub>=0.2.9
 
-# Jupyter y notebooks
-jupyter>=1.0.0
+# Jupyter y notebooks (compatible con Python 3.13+)
+notebook>=6.4.0
 ipykernel>=6.0.0
 
 # Utilidades

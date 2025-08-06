@@ -73,8 +73,31 @@ def check_conda():
         print("❌ Conda no está instalado")
         return False
 
+def check_conda_environment():
+    """Verificar si el entorno conda existe"""
+    print("\n🔧 Verificando entorno conda 'mongo'...")
+    try:
+        result = subprocess.run(['conda', 'env', 'list'], capture_output=True, text=True)
+        if result.returncode == 0:
+            if 'mongo' in result.stdout:
+                print("✅ Entorno conda 'mongo' ya existe")
+                return True
+            else:
+                print("❌ Entorno conda 'mongo' no existe")
+                return False
+        else:
+            print(f"❌ Error al verificar entornos: {result.stderr}")
+            return False
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        return False
+
 def create_conda_environment():
-    """Crear entorno conda"""
+    """Crear entorno conda si no existe"""
+    if check_conda_environment():
+        print("ℹ️ Usando entorno existente 'mongo'")
+        return True
+    
     print("\n🔧 Creando entorno conda 'mongo'...")
     try:
         # Crear entorno
@@ -90,24 +113,131 @@ def create_conda_environment():
         print(f"❌ Error: {e}")
         return False
 
+def check_package_version(package_name, min_version=None):
+    """Verificar si un paquete está instalado y su versión"""
+    try:
+        if platform.system() == "Windows":
+            check_cmd = f"conda activate mongo && python -c \"import {package_name}; print('{package_name}:' + {package_name}.__version__)\""
+        else:
+            check_cmd = f"source activate mongo && python -c \"import {package_name}; print('{package_name}:' + {package_name}.__version__)\""
+        
+        result = subprocess.run(check_cmd, shell=True, capture_output=True, text=True)
+        if result.returncode == 0:
+            version = result.stdout.strip().split(':')[1]
+            print(f"✅ {package_name} {version} - Ya instalado")
+            return True, version
+        else:
+            print(f"❌ {package_name} - No instalado")
+            return False, None
+    except Exception as e:
+        print(f"❌ Error verificando {package_name}: {e}")
+        return False, None
+
 def install_dependencies():
     """Instalar dependencias Python"""
-    print("\n📦 Instalando dependencias Python...")
+    print("\n📦 Verificando dependencias Python...")
     try:
-        # Activar entorno y instalar dependencias
-        if platform.system() == "Windows":
-            activate_cmd = "conda activate mongo && pip install -r requirements.txt"
-            result = subprocess.run(activate_cmd, shell=True, capture_output=True, text=True)
-        else:
-            activate_cmd = "source activate mongo && pip install -r requirements.txt"
-            result = subprocess.run(activate_cmd, shell=True, capture_output=True, text=True)
+        # Verificar versión de Python para ajustar dependencias
+        version = sys.version_info
+        python_version = f"{version.major}.{version.minor}"
         
-        if result.returncode == 0:
-            print("✅ Dependencias instaladas exitosamente")
+        print(f"🐍 Versión de Python detectada: {python_version}")
+        
+        # Definir paquetes requeridos con versiones mínimas
+        required_packages = {
+            "pandas": "1.5.0",
+            "numpy": "1.21.0", 
+            "matplotlib": "3.5.0",
+            "seaborn": "0.11.0",
+            "pymongo": "4.0.0",
+            "tqdm": "4.60.0",
+            "colorama": "0.4.4",
+            "python-dateutil": "2.8.0",
+            "pytz": "2022.1"
+        }
+        
+        # Verificar paquetes ya instalados
+        missing_packages = []
+        for package, min_version in required_packages.items():
+            is_installed, current_version = check_package_version(package, min_version)
+            if not is_installed:
+                missing_packages.append(f"{package}>={min_version}")
+        
+        if not missing_packages:
+            print("✅ Todas las dependencias ya están instaladas")
             return True
+        
+        print(f"\n📦 Instalando paquetes faltantes: {', '.join(missing_packages)}")
+        
+        # Manejar Jupyter según la versión de Python
+        if version.major == 3 and version.minor >= 13:
+            print("⚠️ Python 3.13+ detectado - Instalando Jupyter compatible")
+            jupyter_packages = [
+                "notebook>=6.4.0",
+                "ipykernel>=6.0.0"
+            ]
         else:
-            print(f"❌ Error al instalar dependencias: {result.stderr}")
-            return False
+            jupyter_packages = [
+                "jupyter>=1.0.0",
+                "ipykernel>=6.0.0"
+            ]
+        
+        # Verificar Jupyter
+        for jupyter_pkg in jupyter_packages:
+            package_name = jupyter_pkg.split('>=')[0]
+            is_installed, _ = check_package_version(package_name)
+            if not is_installed:
+                missing_packages.append(jupyter_pkg)
+        
+        # Instalar kagglehub según la versión de Python
+        if version.major == 3 and version.minor >= 13:
+            print("⚠️ Python 3.13+ detectado - Instalando kagglehub compatible")
+            kagglehub_version = "kagglehub>=0.2.9"
+        else:
+            kagglehub_version = "kagglehub>=0.3.0"
+        
+        # Verificar kagglehub
+        is_installed, _ = check_package_version("kagglehub")
+        if not is_installed:
+            missing_packages.append(kagglehub_version)
+        
+        # Instalar paquetes faltantes
+        failed_packages = []
+        for package in missing_packages:
+            print(f"📦 Instalando {package}...")
+            if platform.system() == "Windows":
+                install_cmd = f"conda activate mongo && pip install {package}"
+            else:
+                install_cmd = f"source activate mongo && pip install {package}"
+            
+            result = subprocess.run(install_cmd, shell=True, capture_output=True, text=True)
+            if result.returncode != 0:
+                print(f"⚠️ Error al instalar {package}: {result.stderr}")
+                failed_packages.append(package)
+                # Intentar instalación sin restricciones de versión
+                print(f"🔄 Intentando instalación sin restricciones para {package}...")
+                package_name = package.split('>=')[0].split('==')[0]
+                if platform.system() == "Windows":
+                    install_cmd = f"conda activate mongo && pip install {package_name}"
+                else:
+                    install_cmd = f"source activate mongo && pip install {package_name}"
+                
+                result2 = subprocess.run(install_cmd, shell=True, capture_output=True, text=True)
+                if result2.returncode == 0:
+                    print(f"✅ {package_name} instalado correctamente (sin restricciones)")
+                else:
+                    print(f"❌ No se pudo instalar {package_name}")
+            else:
+                print(f"✅ {package} instalado correctamente")
+        
+        if failed_packages:
+            print(f"\n⚠️ Paquetes con problemas: {', '.join(failed_packages)}")
+            print("💡 Algunos paquetes pueden no estar disponibles para tu versión de Python")
+            print("💡 El proyecto puede funcionar con versiones alternativas")
+        
+        print("✅ Instalación de dependencias completada")
+        return True
+        
     except Exception as e:
         print(f"❌ Error: {e}")
         return False

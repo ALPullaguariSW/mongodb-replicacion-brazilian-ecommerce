@@ -44,19 +44,36 @@ Este proyecto implementa un sistema completo de **replicación Primario-Secundar
 
 ### 1. Prerrequisitos
 
-- **Python 3.8+**
+- **Python 3.8+** (recomendado: Python 3.9-3.12 para mejor compatibilidad)
 - **Docker y Docker Compose**
 - **Git**
 - **Anaconda o Miniconda** (recomendado)
 
-### 2. Clonar el Repositorio
+> **Nota**: Python 3.13+ puede tener limitaciones con algunas dependencias. El script de configuración se ajustará automáticamente.
+
+### 2. ¿Por qué un Entorno Conda Separado?
+
+El proyecto crea un entorno conda llamado `mongo` por las siguientes razones:
+
+- **🔒 Aislamiento**: Evita conflictos con otros proyectos en tu sistema
+- **🔄 Reproducibilidad**: Garantiza que el proyecto funcione igual en cualquier máquina
+- **🧹 Limpieza**: No interfiere con tu entorno base o otros proyectos
+- **📦 Gestión de Dependencias**: Controla exactamente qué versiones se instalan
+
+**¿Qué pasa si ya tengo el entorno `mongo`?**
+- El script detectará automáticamente si el entorno existe
+- Si existe, lo usará sin recrearlo
+- Solo instalará los paquetes que falten
+- No sobrescribirá configuraciones existentes
+
+### 3. Clonar el Repositorio
 
 ```bash
 git clone <URL_DEL_REPOSITORIO>
 cd MongoDB_Replicacion_Proyecto
 ```
 
-### 3. Configurar Entorno Conda
+### 4. Configurar Entorno Conda
 
 ```bash
 # Crear entorno conda
@@ -69,7 +86,7 @@ conda activate mongo
 conda info --envs
 ```
 
-### 4. Instalar Dependencias
+### 5. Instalar Dependencias
 
 ```bash
 # Instalar librerías principales
@@ -79,13 +96,24 @@ pip install pandas numpy matplotlib seaborn pymongo kagglehub
 pip install -r requirements.txt
 ```
 
-### 5. Configurar Kaggle (Opcional)
+### 6. Configurar Kaggle (Opcional)
 
 Si quieres usar tu propia cuenta de Kaggle:
 
 ```bash
 # Crear archivo kaggle.json en data/
 echo '{"username":"tu_usuario","key":"tu_api_key"}' > data/kaggle.json
+```
+
+### 7. Verificar Instalación
+
+```bash
+# Verificación rápida de paquetes
+python scripts/quick_check.py
+
+# Verificación manual
+conda activate mongo
+python -c "import pandas, numpy, matplotlib, seaborn, pymongo, kagglehub, notebook; print('✅ Todas las librerías funcionan')"
 ```
 
 ## 📦 Estructura del Proyecto
@@ -104,6 +132,7 @@ MongoDB_Replicacion_Proyecto/
 ├── 📁 scripts/
 │   ├── start_project.py            # Script de inicio del proyecto (con barras de progreso)
 │   ├── setup_project.py            # Script de configuración inicial
+│   ├── quick_check.py              # Verificación rápida de paquetes
 │   ├── progress_utils.py           # Utilidades de barras de progreso
 │   └── common_utils.py             # Utilidades comunes para scripts
 ├── 📄 README.md                    # Este archivo
@@ -171,8 +200,10 @@ rs.status()
 # Activar entorno conda
 conda activate mongo
 
-# Iniciar Jupyter
+# Iniciar Jupyter (compatible con Python 3.13+)
 jupyter notebook
+# O alternativamente:
+notebook
 ```
 
 ### 2. Configurar Kernel
@@ -288,8 +319,11 @@ python scripts/setup_project.py
 # Activar entorno
 conda activate mongo
 
-# Verificar librerías
-python -c "import pandas, numpy, matplotlib, seaborn, pymongo, kagglehub; print('✅ Todas las librerías funcionan')"
+# Verificar librerías (script rápido)
+python scripts/quick_check.py
+
+# Verificar librerías (manual)
+python -c "import pandas, numpy, matplotlib, seaborn, pymongo, kagglehub, notebook; print('✅ Todas las librerías funcionan')"
 
 # Instalar kernel Jupyter
 python -m ipykernel install --user --name mongo --display-name "Python (mongo)"
@@ -360,6 +394,25 @@ python -m ipykernel install --user --name mongo --display-name "Python (mongo)"
 pip install kagglehub
 
 # O usar datos de ejemplo (el notebook tiene fallback)
+```
+
+### Error: "Requires-Python >=3.9" con Python 3.13+
+```bash
+# El script de configuración detecta automáticamente Python 3.13+
+# e instala versiones compatibles de las dependencias
+
+# Si tienes problemas manuales:
+pip install kagglehub==0.2.9  # Versión compatible con Python 3.13+
+pip install notebook>=6.4.0   # Jupyter compatible con Python 3.13+
+```
+
+### Error: "No matching distribution found for puccinialin" con Python 3.13+
+```bash
+# Este error es común en Python 3.13+ con Jupyter
+# Solución: Usar notebook en lugar de jupyter
+
+pip uninstall jupyter
+pip install notebook>=6.4.0
 ```
 
 ## 📝 Notas Importantes
