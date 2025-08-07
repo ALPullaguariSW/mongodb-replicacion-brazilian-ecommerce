@@ -6,14 +6,10 @@ services:
     container_name: mongo-primary
     restart: always
     ports:
-      - "27017:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
+      - "27020:27017"
     command: mongod --replSet rs0 --bind_ip_all
     volumes:
       - mongo_primary_data:/data/db
-      - ./initReplica.js:/docker-entrypoint-initdb.d/initReplica.js:ro
     networks:
       - mongo-network
 
@@ -22,10 +18,7 @@ services:
     container_name: mongo-secondary1
     restart: always
     ports:
-      - "27018:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
+      - "27021:27017"
     command: mongod --replSet rs0 --bind_ip_all
     volumes:
       - mongo_secondary1_data:/data/db
@@ -37,10 +30,7 @@ services:
     container_name: mongo-secondary2
     restart: always
     ports:
-      - "27019:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: password123
+      - "27022:27017"
     command: mongod --replSet rs0 --bind_ip_all
     volumes:
       - mongo_secondary2_data:/data/db

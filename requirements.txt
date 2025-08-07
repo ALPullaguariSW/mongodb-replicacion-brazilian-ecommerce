@@ -1,38 +1,28 @@
-# Dependencias principales para el proyecto MongoDB Replicación
-# Brazilian E-commerce Dataset Analysis
+# MongoDB Replication Project - Requirements
+# Python 3.13+ recommended
 
-# Análisis de datos
-pandas>=1.5.0
-numpy>=1.21.0
+# Core Data Science Libraries
+pandas>=2.0.0
+numpy>=1.24.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
 
-# Visualización
-matplotlib>=3.5.0
-seaborn>=0.11.0
+# MongoDB Driver
+pymongo>=4.5.0
 
-# Base de datos
-pymongo>=4.0.0
+# Jupyter and Interactive Development
+jupyter>=1.0.0
+notebook>=7.0.0
+ipykernel>=6.25.0
 
-# Descarga de datasets
-kagglehub>=0.2.9
-
-# Jupyter y notebooks (compatible con Python 3.13+)
-notebook>=6.4.0
-ipykernel>=6.0.0
-
-# Utilidades
+# Data Processing and Utilities
+tqdm>=4.65.0
+colorama>=0.4.6
 python-dateutil>=2.8.0
-pytz>=2022.1
+pytz>=2023.3
 
-# Barras de progreso y colores
-tqdm>=4.60.0
-colorama>=0.4.4
+# Kaggle API (for dataset download)
+kaggle>=1.5.0
 
-# Opcional: Para análisis más avanzado
-scikit-learn>=1.0.0
-scipy>=1.7.0
-
-# Opcional: Para visualizaciones interactivas
-plotly>=5.0.0
-
-# Opcional: Para procesamiento de datos más rápido
-pyarrow>=7.0.0 
+# Additional Utilities
+packaging>=23.0 
